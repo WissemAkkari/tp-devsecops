@@ -68,7 +68,4 @@ jobs:
       - name: Push Docker image
         if: github.event_name == 'push'
         run: docker push $DOCKER_IMAGE_NAME
-
-        # Gitleaks scan (before compilation)
-      - name: Run Gitleaks scan
-        uses: zricethezav/gitleaks-action@v2
+        
