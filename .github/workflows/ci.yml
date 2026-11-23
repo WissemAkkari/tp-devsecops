@@ -56,10 +56,15 @@ jobs:
       - name: Test Docker image locally
         run: |
           docker run -d -p 8080:8080 --name test-app $DOCKER_IMAGE_NAME
-          sleep 15
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:8080 && break
+            echo "Waiting for app... ($i)"
+            sleep 3
+          done
           curl -f http://localhost:8080
+          docker logs test-app
           docker stop test-app
 
       - name: Push Docker image
         if: github.event_name == 'push'
-        run: docker push $DOCKER_IMAGE_NAMEs
+        run: docker push $DOCKER_IMAGE_NAME
