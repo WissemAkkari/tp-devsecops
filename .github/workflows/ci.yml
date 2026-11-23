@@ -7,7 +7,23 @@ on:
     branches: [ main ]
 
 jobs:
+  # Job 1: secret detection
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job 2: build and deploy (only runs if gitleaks passes)
   build-and-deploy:
+    needs: gitleaks
     runs-on: ubuntu-latest
     env:
       DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/democyber:latest
@@ -46,4 +62,4 @@ jobs:
 
       - name: Push Docker image
         if: github.event_name == 'push'
-        run: docker push $DOCKER_IMAGE_NAME
+        run: docker push $DOCKER_IMAGE_NAMEs
